@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Présence Élèves</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    h1 { color: #333; }
+    .card { border: 1px solid #ccc; padding: 20px; border-radius: 10px; max-width: 400px; }
+    input, button { width: 100%; padding: 10px; margin-top: 10px; }
+    #presentList { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Pointage de présence</h1>
+
+  <div class="card">
+    <h2>Élève</h2>
+    <input id="studentName" type="text" placeholder="Votre nom" />
+    <button onclick="markPresence()">Je suis présent</button>
+    <p id="status"></p>
+  </div>
+
+  <div class="card" style="margin-top:30px;">
+    <h2>Professeur</h2>
+    <button onclick="showPresenceList()">Afficher la liste des présents</button>
+    <ul id="presentList"></ul>
+  </div>
+
+  <script>
+    const PRESENT_KEY = "presence_list";
+
+    function getList() {
+      return JSON.parse(localStorage.getItem(PRESENT_KEY) || "[]");
+    }
+
+    function saveList(list) {
+      localStorage.setItem(PRESENT_KEY, JSON.stringify(list));
+    }
+
+    function markPresence() {
+      const name = document.getElementById("studentName").value.trim();
+      const status = document.getElementById("status");
+      if (!name) {
+        status.textContent = "Veuillez entrer votre nom.";
+        status.style.color = "red";
+        return;
+      }
+
+      const list = getList();
+      list.push({ name, time: new Date().toLocaleTimeString() });
+      saveList(list);
+
+      status.textContent = `Présence enregistrée pour : ${name}`;
+      status.style.color = "green";
+    }
+
+    function showPresenceList() {
+      const list = getList();
+      const container = document.getElementById("presentList");
+      container.innerHTML = "";
+      list.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} — ${item.time}`;
+        container.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
